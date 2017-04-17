@@ -43,7 +43,7 @@
     </servlet>    
     <servlet-mapping>    
         <servlet-name>dispatcher0121</servlet-name>    
-        <url-pattern>*.do</url-pattern>    
-    </servlet-mapping>    
+        <url-pattern>/</url-pattern>    
+    </servlet-mapping>
   
 </web-app>  
