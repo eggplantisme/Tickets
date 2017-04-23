@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>  
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance http://www.springmodules.org/schema/cache/springmodules-cache.xsd http://www.springmodules.org/schema/cache/springmodules-ehcache.xsd"  
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"  
     version="2.5">  
     <!-- 区分项目名称，防止默认重名 -->    
@@ -24,7 +24,8 @@
         <init-param>    
             <param-name>forceEncoding</param-name>    
             <param-value>true</param-value>    
-        </init-param>    
+        </init-param>
+        <async-supported>true</async-supported> 
     </filter>    
     <filter-mapping>    
         <filter-name>CharacterEncodingFilter</filter-name>    
@@ -39,7 +40,8 @@
             <param-name>contextConfigLocation</param-name>    
             <param-value>/WEB-INF/dispatcher0121-servlet.xml</param-value>    
         </init-param>    
-        <load-on-startup>1</load-on-startup>    
+        <load-on-startup>1</load-on-startup> 
+        <async-supported>true</async-supported>   
     </servlet>    
     <servlet-mapping>    
         <servlet-name>dispatcher0121</servlet-name>    

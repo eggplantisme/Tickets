@@ -7,6 +7,13 @@ public class Movie {
 	private String movie_name;
 	private String main_actors;
 	private String movie_description;
+	
+	private String movie_intro;
+	private String movie_director;
+	private String movie_style;
+	private String movie_span;
+	
+	
 	private int Now_ReceivedMoney;//Æ±·¿
 	private Date On_time;
 	private Date End_time;
@@ -68,5 +75,29 @@ public class Movie {
 	}
 	public void setPoster(String poster) {
 		Poster = poster;
+	}
+	public String getMovie_intro() {
+		return movie_intro;
+	}
+	public void setMovie_intro(String movie_intro) {
+		this.movie_intro = movie_intro;
+	}
+	public String getMovie_director() {
+		return movie_director;
+	}
+	public void setMovie_director(String movie_director) {
+		this.movie_director = movie_director;
+	}
+	public String getMovie_style() {
+		return movie_style;
+	}
+	public void setMovie_style(String movie_style) {
+		this.movie_style = movie_style;
+	}
+	public String getMovie_span() {
+		return movie_span;
+	}
+	public void setMovie_span(String movie_span) {
+		this.movie_span = movie_span;
 	}
 }

@@ -2,7 +2,9 @@ package main;
 
 
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -10,6 +12,7 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 
 import org.aspectj.weaver.NameMangler;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Controller;    
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,13 +21,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import bean.Comment;
 import bean.Movie;
 import bean.User;
+import dao.CommentDao;
 import dao.MovieDao;
-import dao.UserDao;    
+import dao.UserDao;
+import net.sf.json.JSONObject;    
     
 @Controller
 public class GeneralController {
@@ -75,17 +82,80 @@ public class GeneralController {
     	UserDao userDao = new UserDao();
         userDao.UpdateUserName(request.getParameter("name"), (String)session.getAttribute("username"));
         session.setAttribute("username", request.getParameter("name"));
+        
         model.addAttribute("name", session.getAttribute("username"));
         return "redirect:info";
     }
 
     //电影详情
-    @RequestMapping(value = "/movie/{id}", method = RequestMethod.GET)    
+    @RequestMapping(value = "/movie/{id}", method = RequestMethod.GET)
     public String movie_jsp(@PathVariable int id, Model model, HttpSession session) {
     	MovieDao movieDao = new MovieDao();
     	Movie movie = movieDao.GetMovieFromID(id);
+    	//评论显示
+    	CommentDao commentDao = new CommentDao();
+    	List<Comment> comments =  commentDao.getAllComments(id);
+    	model.addAttribute("comments", comments);
     	model.addAttribute("movie", movie);
     	model.addAttribute("name", session.getAttribute("username"));
     	return "movie";
+    }
+    
+    
+    //电影详情页面的评论添加
+    @ResponseBody
+    @RequestMapping(value = "/movie/{id}", method = RequestMethod.POST)    
+    public Object movie_comment(@PathVariable int id, Model model, @RequestParam("comment") String comment, @RequestParam("deleteId") String commentIdToDelete, HttpSession session) {
+    	CommentDao commentDao = new CommentDao();
+    	//调试
+			System.out.println(comment);
+			System.out.println(commentIdToDelete);
+		//要删除时
+		JSONObject jsonObject = new JSONObject();
+    	if (commentIdToDelete != "") {
+    		commentDao.DeleteComment(Integer.parseInt(commentIdToDelete));
+    		jsonObject.put("isDelete", "YES");
+    		jsonObject.put("commentId", commentIdToDelete);
+    		jsonObject.put("username", "");
+    		jsonObject.put("mid", "");
+    		jsonObject.put("comment", comment);
+    		return jsonObject;
+    	} else if (comment != "") {//要添加时
+    		jsonObject.put("isDelete", "NO");
+    		jsonObject.put("commentId", "");
+    		Comment _comment = new Comment();
+        	if (session.getAttribute("username") == null) {
+        		_comment.setUserName("路人");
+        		jsonObject.put("username", "路人");
+        	} else {
+        		_comment.setUserName((String)session.getAttribute("username"));
+        		jsonObject.put("username", (String)session.getAttribute("username"));
+        	}
+        	_comment.setmId(id);
+        	jsonObject.put("mid", id);
+        	_comment.setCommentText(comment);
+        	jsonObject.put("comment", comment);
+        	commentDao.AddComment(_comment);
+    		return jsonObject;
+    	} else {
+    		return null;
+    	}
+    }
+    
+    
+    //所有电影
+    @RequestMapping(value = "/movies", method = RequestMethod.GET)
+    public String movies_jsp(Model model, HttpSession session) {
+    	MovieDao movieDao = new MovieDao();
+    	List<Movie> movies = movieDao.GetMovies();
+    	model.addAttribute("movies", movies);
+    	model.addAttribute("name", session.getAttribute("username"));
+    	return "movies";
+    }
+    //订票
+    @RequestMapping(value = "/book", method = RequestMethod.GET)
+    public String book_jsp(Model model, HttpSession session) {
+    	
+    	return "book";
     }
 }

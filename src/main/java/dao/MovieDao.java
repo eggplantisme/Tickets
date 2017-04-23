@@ -16,11 +16,11 @@ public class MovieDao  extends Data_Built {
 	
 	
 	String create_movie_table = "create table if not exists movieInfo(mId int AUTO_INCREMENT primary key, movieName TEXT, movieActors TEXT, "
-			+ "movieDescription TEXT, Now_ReceivedMoney int, On_time DATE, End_time DATE, Poster TEXT, Trailer TEXT)";
+			+ "movieDescription TEXT, Now_ReceivedMoney int, On_time DATE, End_time DATE, Poster TEXT, Trailer TEXT, movieIntro TEXT, movieDirector TEXT, movieStyle TEXT, movieSpan TEXT)";
 	String add_movie = "insert into movieInfo(movieName, movieActors, "
-			+ "movieDescription, Now_ReceivedMoney, On_time, End_time, Poster, Trailer) values (?, ?, ?, ?, ?, ?, ?, ?)";
-	String query_movie_byId = "select * from movieInfo where mId=?";
+			+ "movieDescription, Now_ReceivedMoney, On_time, End_time, Poster, Trailer, movieIntro, movieDirector, movieStyle, movieSpan) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
+	String query_movie_byId = "select * from movieInfo where mId=?";
 	String query_all_movie = "select * from movieInfo";
 	
 	public MovieDao() {
@@ -45,6 +45,10 @@ public class MovieDao  extends Data_Built {
 			ps.setDate(6, movie.getEnd_time());
 			ps.setString(7,  movie.getPoster());
 			ps.setString(8,  movie.getTrailer());
+			ps.setString(9, movie.getMovie_intro());
+			ps.setString(10,  movie.getMovie_director());
+			ps.setString(11, movie.getMovie_style());
+			ps.setString(12, movie.getMovie_span());
 			int num = ps.executeUpdate();
 			if(num>0){
 				bool=true;
@@ -75,6 +79,11 @@ public class MovieDao  extends Data_Built {
 				movie.setEnd_time(rs.getDate("End_time"));
 				movie.setPoster(rs.getString("Poster"));
 				movie.setTrailer(rs.getString("Trailer"));
+				movie.setMovie_director(rs.getString("movieDirector"));
+				movie.setMovie_intro(rs.getString("movieIntro"));
+				movie.setMain_actors(rs.getString("movieDirector"));
+				movie.setMovie_style(rs.getString("movieStyle"));
+				movie.setMovie_span(rs.getString("movieSpan"));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -103,6 +112,10 @@ public class MovieDao  extends Data_Built {
 				movie.setEnd_time(rs.getDate("End_time"));
 				movie.setPoster(rs.getString("Poster"));
 				movie.setTrailer(rs.getString("Trailer"));
+				movie.setMovie_intro(rs.getString("movieIntro"));
+				movie.setMain_actors(rs.getString("movieDirector"));
+				movie.setMovie_style(rs.getString("movieStyle"));
+				movie.setMovie_span(rs.getString("movieSpan"));
 				movies.add(movie);
 			}
 		} catch (SQLException e) {

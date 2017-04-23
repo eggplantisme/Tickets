@@ -80,7 +80,7 @@
         	<div class="btn-group">
         		<button type="button" class="btn btn-default">正在热映(数量)</button><!-- 数量要后台给数据 -->
         		<button type="button" class="btn btn-default">即将热映(数量)</button><!-- 数量要后台给数据 -->
-        		<button type="button" class="btn btn-default">查看全部<span class="glyphicon glyphicon-chevron-right"></span></button>
+        		<a href="./movies"><button type="button" class="btn btn-default">查看全部<span class="glyphicon glyphicon-chevron-right"></span></button></a>
         	</div>
         	<!-- 轮播-->
         	<div id = "carousel_for_main" class="carousel slide row">
@@ -102,7 +102,7 @@
         				<img src="images/six-flower.jpg" alt="Third slide" class="img-responsive center-block">
         			</div>
         			<div class="item col-center-block">
-        				<img src="images/zyl.jpg" alt="Four slide" class="img-responsive center-block">
+        				<a href="./movie/1"><img src="images/zyl.jpg" alt="Four slide" class="img-responsive center-block"></a>
         			</div>
         			<div class="item col-center-block">
         				<img src="images/夏娜.jpg" alt="Five slide" class="img-responsive center-block">
@@ -120,7 +120,7 @@
 		        				<tr><th>票房排行榜</th></tr>
 		        			</thead>
 		        			<tbody>
-		        				<tr><td>Giacomo</td></tr>
+		        				<tr><td><a href="./movie/1">Stein</a></td></tr>
 		        			</tbody>
 		        			<tbody>
 		        				<tr><td>ice</td></tr>
