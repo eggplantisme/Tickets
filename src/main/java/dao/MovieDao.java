@@ -5,9 +5,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.support.MethodOverride;
-
-import com.mysql.fabric.xmlrpc.base.Array;
 
 import bean.Movie;
 
@@ -34,6 +31,7 @@ public class MovieDao  extends Data_Built {
 		}
 	}
 	public boolean AddMovie(Movie movie) {
+		openCon();
 		boolean bool=false;
 		try {
 			ps= con.prepareStatement(add_movie);
@@ -64,6 +62,7 @@ public class MovieDao  extends Data_Built {
 	}
 	
 	public Movie GetMovieFromID(int mid) {
+		openCon();
 		Movie movie = new Movie();
 		try {
 			ps=con.prepareStatement(query_movie_byId);
@@ -97,6 +96,7 @@ public class MovieDao  extends Data_Built {
 	}
 	
 	public List<Movie> GetMovies() {
+		openCon();
 		ArrayList<Movie> movies = new ArrayList<Movie>();
 		try {
 			ps=con.prepareStatement(query_all_movie);

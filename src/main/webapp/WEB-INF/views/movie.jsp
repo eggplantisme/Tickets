@@ -51,7 +51,7 @@
 				        	</ul>
 	        			</li>
 	        			<li class="dropdown">
-	        				<a href="../book"> 
+	        				<a href="../book/${id}"> 
 		        			订票   <span class="glyphicon glyphicon-barcode"></span>
 		        			</a>
 	        			</li>

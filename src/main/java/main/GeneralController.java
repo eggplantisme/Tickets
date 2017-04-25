@@ -13,6 +13,7 @@ import javax.websocket.server.PathParam;
 
 import org.aspectj.weaver.NameMangler;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Controller;    
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,9 +28,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import bean.Comment;
 import bean.Movie;
+import bean.Schedule;
+import bean.Seat;
 import bean.User;
 import dao.CommentDao;
 import dao.MovieDao;
+import dao.ScheduleDao;
+import dao.SeatDao;
 import dao.UserDao;
 import net.sf.json.JSONObject;    
     
@@ -100,8 +105,6 @@ public class GeneralController {
     	model.addAttribute("name", session.getAttribute("username"));
     	return "movie";
     }
-    
-    
     //电影详情页面的评论添加
     @ResponseBody
     @RequestMapping(value = "/movie/{id}", method = RequestMethod.POST)    
@@ -141,8 +144,7 @@ public class GeneralController {
     		return null;
     	}
     }
-    
-    
+
     //所有电影
     @RequestMapping(value = "/movies", method = RequestMethod.GET)
     public String movies_jsp(Model model, HttpSession session) {
@@ -153,9 +155,46 @@ public class GeneralController {
     	return "movies";
     }
     //订票
-    @RequestMapping(value = "/book", method = RequestMethod.GET)
-    public String book_jsp(Model model, HttpSession session) {
-    	
+    @RequestMapping(value = "/book/{id}", method = RequestMethod.GET)
+    public String book_jsp(@PathVariable int id, Model model, HttpSession session) {
+    	ScheduleDao scheduleDao = new ScheduleDao();
+    	List<Schedule> schedules = scheduleDao.GetschedulesByMid(id);
+    	model.addAttribute("schedules", schedules);
+    	model.addAttribute("id", id);
+    	model.addAttribute("name", session.getAttribute("username"));
+    	session.setAttribute("movieId", id);
     	return "book";
+    }
+    
+    //选座
+    @RequestMapping(value = "/choose_seat/{sId}", method = RequestMethod.GET)
+    public String choose_seat_jsp(@PathVariable int sId, Model model, HttpSession session) {
+    	SeatDao seatDao = new SeatDao();
+    	List<Seat> seats = seatDao.GetUsedSeatsBySid(sId);
+    	model.addAttribute("seats", seats);
+    	model.addAttribute("sId", sId);
+    	model.addAttribute("movieId", session.getAttribute("movieId"));
+    	model.addAttribute("name", session.getAttribute("username"));
+    	return "choose_seat";
+    }
+    
+    //选座
+    @RequestMapping(value = "/choose_seat/{sId}", method = RequestMethod.POST)
+    public String choose_seat(@PathVariable int sId, Model model, HttpSession session,  @RequestParam("seatRow") int seatRow, @RequestParam("seatcolumn") int seatColumn) {
+    	SeatDao seatDao = new SeatDao();
+    	Seat seat = new Seat();
+    	seat.setsId(sId);
+    	seat.setSeatRow(seatRow);
+    	seat.setSeatColumn(seatColumn);
+    	int seatId = seatDao.addUsedSeat(seat);//向数据库添加一项座位被选了的信息
+    	model.addAttribute("seatId", seatId);
+    	model.addAttribute("name", session.getAttribute("username"));
+    	return "redirect:../order";
+    }
+    
+  //订单
+    @RequestMapping(value = "/order", method = RequestMethod.GET)
+    public String choose_seat(Model model, HttpSession session) {
+    	return "order";
     }
 }

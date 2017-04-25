@@ -29,6 +29,7 @@ public class UserDao extends Data_Built{
 	}
 	//添加用户
 	public boolean addUser(User user){
+		openCon();
 		boolean bool=false;
 		try {
 			ps= con.prepareStatement(add_user);
@@ -51,6 +52,7 @@ public class UserDao extends Data_Built{
 	}
 	//查询用户
 	public boolean queryUserbyName(User bean){
+		openCon();
 		boolean bool=false;
 		try {
 			ps=con.prepareStatement(query_user_byName);
@@ -70,6 +72,7 @@ public class UserDao extends Data_Built{
 		return bool;
 	}
 	public boolean queryUserbyPhone(User bean){
+		openCon();
 		boolean bool=false;
 		try {
 			ps=con.prepareStatement(query_user_byPhone);
@@ -90,6 +93,7 @@ public class UserDao extends Data_Built{
 	}
 	//更改用户
 	public boolean UpdateUser(User user, int userId) {
+		openCon();
 		boolean bool=false;
 		try {
 			ps=con.prepareStatement(update_userInfo);
@@ -112,6 +116,7 @@ public class UserDao extends Data_Built{
 		return bool;
 	}
 	public boolean UpdateUserName(String name, String ori_name) {
+		openCon();
 		boolean bool=false;
 		try {
 			ps=con.prepareStatement(update_userName);
@@ -132,6 +137,7 @@ public class UserDao extends Data_Built{
 		return bool;
 	}
 	public boolean UpdateUserpassword(String _password, int userId) {
+		openCon();
 		boolean bool=false;
 		try {
 			ps=con.prepareStatement(update_userPassword);
@@ -153,6 +159,7 @@ public class UserDao extends Data_Built{
 	}
 	//注销用户
 	public boolean DeleteUser(int userId) {
+		openCon();
 		boolean bool=false;
 		try {
 			ps= con.prepareStatement(delete_user);
