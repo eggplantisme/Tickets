@@ -23,14 +23,13 @@ public class UserDao extends Data_Built{
 			cps = con.prepareStatement(create_user_table);
 			cps.executeUpdate();
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 	}
 	//添加用户
-	public boolean addUser(User user){
+	public int addUser(User user){
 		openCon();
-		boolean bool=false;
+		int uId = 0;
 		try {
 			ps= con.prepareStatement(add_user);
 			ps.setString(1,user.getUsername());
@@ -39,7 +38,10 @@ public class UserDao extends Data_Built{
 			ps.setString(4, user.getUserLocation());
 			int num = ps.executeUpdate();
 			if(num>0){
-				bool=true;
+				ps = con.prepareStatement("select @@IDENTITY");
+				rs = ps.executeQuery();
+				while (rs.next())
+					uId = rs.getInt("@@IDENTITY");
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -48,7 +50,7 @@ public class UserDao extends Data_Built{
 			this.closePs();
 			this.closeCon();
 		}
-		return bool;
+		return uId;
 	}
 	//查询用户
 	public boolean queryUserbyName(User bean){
@@ -82,7 +84,6 @@ public class UserDao extends Data_Built{
 				bool=true;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally{
 			this.closeRs();
@@ -106,7 +107,6 @@ public class UserDao extends Data_Built{
 				bool = true;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally{
 			this.closeRs();
@@ -127,7 +127,6 @@ public class UserDao extends Data_Built{
 				bool = true;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally{
 			this.closeRs();
@@ -148,7 +147,6 @@ public class UserDao extends Data_Built{
 				bool = true;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally{
 			this.closeRs();
@@ -169,7 +167,6 @@ public class UserDao extends Data_Built{
 				bool=true;
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			this.closePs();

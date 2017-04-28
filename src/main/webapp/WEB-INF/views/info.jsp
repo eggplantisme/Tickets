@@ -1,6 +1,8 @@
+<%@page import="bean.Order"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>  
+<%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -101,9 +103,51 @@
 		        					<th>数量</th>
 		        					<th>总价</th>
 		        					<th>订单状态</th>
-		        					<th>操作</th>
+		        					<th>详情</th>
 		        				</tr>
 		        			</thead>
+		        			<sql:setDataSource var="database" driver="com.mysql.jdbc.Driver"
+								url="jdbc:mysql://localhost:3306/tickets"
+								user="root" password="root"/>
+							<tbody>
+								<sql:query var="orders" dataSource="${database}">
+									SELECT * from orderInfo where uId = ${sessionScope.userId};
+								</sql:query>
+								<c:forEach var="order" items="${orders.rows}">
+									<tr>
+			        					<td>
+											<sql:query var="schedules" dataSource="${database}">
+												SELECT * from scheduleInfo where sId = ${order.sId};
+											</sql:query>
+											<c:forEach var="schedule" items="${schedules.rows}">
+												<sql:query var="movies" dataSource="${database}">
+													SELECT * from movieInfo where mId = ${schedule.mId};
+												</sql:query>
+												<c:forEach var="movie" items="${movies.rows}">
+													<c:out value="${movie.movieName} "></c:out>
+												</c:forEach><!-- 实际上只有一个 -->
+												
+												<sql:query var="cinemas" dataSource="${database}">
+													SELECT * from cinemaInfo where cId = ${schedule.cId};
+												</sql:query>
+												<c:forEach var="cinema" items="${cinemas.rows}">
+													<c:out value="影院名:${cinema.cinemaName}"></c:out>
+												</c:forEach><!-- 实际上只有一个 -->
+												<c:out value="放映厅:${schedule.hallName}"></c:out>
+												
+												<c:out value="观影时间:${schedule.startDate}  ${schedule.startTime}"></c:out>
+											</c:forEach><!-- 实际上只有一个 -->
+			        					</td>
+			        					<td>1</td>
+			        					<td>${order.orderPrice}</td>
+			        					<td>${order.status}</td>
+			        					<td>
+			        						<a href="./order/${order.orderId}"><button>订单详情</button></a>
+			        						<!-- 这里使用的数据库里面的属性名orderId而不是oId -->
+			        					</td>
+			        				</tr>
+								</c:forEach>
+							</tbody>
 		        		</table>
 				</div>
 			</div>

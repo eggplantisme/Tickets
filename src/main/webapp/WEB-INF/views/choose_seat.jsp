@@ -66,12 +66,6 @@
 			<img src="../images/movie/${movieId}.jpg" alt="海报" class="img-responsive center-block">
 		</div>
 		<div class="col-md-10 column">
-			<form action="" method="POST">
-				<input name="seatRow" placeholder="行"/>
-				<input name="seatcolumn" placeholder="列"/>
-				<input type="submit"/>
-			</form>
-
 			<sql:setDataSource var="database" driver="com.mysql.jdbc.Driver"
 								url="jdbc:mysql://localhost:3306/tickets"
 								user="root" password="root"/>
@@ -143,7 +137,7 @@
 				</div>
 				
 				<div class="panel-footer">
-					<button id="choose_seat_submit" class="btn btn-primary center-block">我选好了</button>
+					<button id="choose_seat_submit" class="btn btn-primary center-block" onclick="choose_seat('${sId}', ${name == null ? 0 : 1})">我选好了</button>
 				</div>
 			</div>
 		

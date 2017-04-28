@@ -28,11 +28,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import bean.Comment;
 import bean.Movie;
+import bean.Order;
 import bean.Schedule;
 import bean.Seat;
 import bean.User;
 import dao.CommentDao;
 import dao.MovieDao;
+import dao.OrderDao;
 import dao.ScheduleDao;
 import dao.SeatDao;
 import dao.UserDao;
@@ -57,6 +59,7 @@ public class GeneralController {
     	//ajax异步访问来确定数据库是否有重复用户，TODO
     	
     	session.setAttribute("username", user.getUsername());
+    	session.setAttribute("userId", 1);//暂时设定为1，登录时需要从数据库验证是否存在，这时候来获取真正的ID，页面表单验证实现阶段在来实现这个东西 TODO
     	return "redirect:index";
     }
     
@@ -70,8 +73,9 @@ public class GeneralController {
     	//没有做重复名字的处理
     	System.out.println(user.getUsername() + "-" + user.getPassword() + "-" + user.getPhoneNumber());
     	UserDao userDao = new UserDao();
-        userDao.addUser(user);
+        int uId = userDao.addUser(user);
         session.setAttribute("username", user.getUsername());
+        session.setAttribute("userId", uId);
     	return "redirect:index";
     }
     
@@ -180,6 +184,7 @@ public class GeneralController {
     
     //选座
     @RequestMapping(value = "/choose_seat/{sId}", method = RequestMethod.POST)
+    @ResponseBody
     public String choose_seat(@PathVariable int sId, Model model, HttpSession session,  @RequestParam("seatRow") int seatRow, @RequestParam("seatcolumn") int seatColumn) {
     	SeatDao seatDao = new SeatDao();
     	Seat seat = new Seat();
@@ -187,14 +192,47 @@ public class GeneralController {
     	seat.setSeatRow(seatRow);
     	seat.setSeatColumn(seatColumn);
     	int seatId = seatDao.addUsedSeat(seat);//向数据库添加一项座位被选了的信息
-    	model.addAttribute("seatId", seatId);
-    	model.addAttribute("name", session.getAttribute("username"));
-    	return "redirect:../order";
+    	session.setAttribute("seatId", seatId);
+    	session.setAttribute("sId", sId);
+    	return "../order/";
     }
     
-  //订单
-    @RequestMapping(value = "/order", method = RequestMethod.GET)
-    public String choose_seat(Model model, HttpSession session) {
+    //第一次订单
+    @RequestMapping(value = "/order/", method = RequestMethod.GET)
+    public String first_order(Model model, HttpSession session) {
+    	//添加一个订单到数据库
+    	OrderDao orderDao = new OrderDao();
+    	Order order = new Order();
+    	order.setSeatId(Integer.parseInt(session.getAttribute("seatId").toString()));
+    	order.setsId(Integer.parseInt(session.getAttribute("sId").toString()));
+    	order.setuId(Integer.parseInt(session.getAttribute("userId").toString()));
+    	ScheduleDao scheduleDao = new ScheduleDao();
+    	Schedule schedule = scheduleDao.GetSchedule(Integer.parseInt(session.getAttribute("sId").toString()));
+    	order.setOrderPrice(schedule.getPrice());
+    	order.setBuyDate(null);
+    	order.setStatus("未支付");
+    	int oId = orderDao.addOrder(order);
+    	order.setoId(oId);
+    	model.addAttribute("order", order);
+    	model.addAttribute("movieId", session.getAttribute("movieId"));
+    	model.addAttribute("sId", Integer.parseInt(session.getAttribute("sId").toString()));
+    	model.addAttribute("name", session.getAttribute("username"));
+    	return "order";
+    }
+    
+    //订单
+    @RequestMapping(value = "/order/{oId}", method = RequestMethod.GET)
+    public String order(@PathVariable int oId, Model model, HttpSession session) {
+    	//添加一个订单到数据库
+    	OrderDao orderDao = new OrderDao();
+    	Order order = orderDao.GetOrderbyOid(oId);
+     	model.addAttribute("order", order);
+     	ScheduleDao scheduleDao = new ScheduleDao();
+     	Schedule schedule = scheduleDao.GetSchedule(order.getsId());
+    	model.addAttribute("movieId", schedule.getmId());
+    	model.addAttribute("sId", order.getsId());
+    	model.addAttribute("name", session.getAttribute("username"));
+    	session.setAttribute("seatId", order.getSeatId());
     	return "order";
     }
 }

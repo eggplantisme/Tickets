@@ -41,8 +41,8 @@
 	        					</li>
 	        				</c:when>
 	        				<c:otherwise>
-			        			<li><a href="../login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
-			        			<li><a href="../regist"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
+			        			<li><a href="./login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+			        			<li><a href="./regist"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
 	        				</c:otherwise>
 	        			</c:choose>
 	        		</ul>
