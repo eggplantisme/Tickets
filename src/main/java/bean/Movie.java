@@ -15,8 +15,8 @@ public class Movie {
 	
 	
 	private int Now_ReceivedMoney;//Æ±·¿
-	private Date On_time;
-	private Date End_time;
+	private Date on_time;
+	private Date end_time;
 	
 	private String Poster;
 	
@@ -52,18 +52,6 @@ public class Movie {
 		Now_ReceivedMoney = now_ReceivedMoney;
 	}
 	
-	public Date getOn_time() {
-		return On_time;
-	}
-	public void setOn_time(Date on_time) {
-		On_time = on_time;
-	}
-	public Date getEnd_time() {
-		return End_time;
-	}
-	public void setEnd_time(Date end_time) {
-		End_time = end_time;
-	}
 	public String getTrailer() {
 		return Trailer;
 	}
@@ -99,5 +87,29 @@ public class Movie {
 	}
 	public void setMovie_span(String movie_span) {
 		this.movie_span = movie_span;
+	}
+	/**
+	 * @return the on_time
+	 */
+	public Date getOn_time() {
+		return on_time;
+	}
+	/**
+	 * @param on_time the on_time to set
+	 */
+	public void setOn_time(Date on_time) {
+		this.on_time = on_time;
+	}
+	/**
+	 * @return the end_time
+	 */
+	public Date getEnd_time() {
+		return end_time;
+	}
+	/**
+	 * @param end_time the end_time to set
+	 */
+	public void setEnd_time(Date end_time) {
+		this.end_time = end_time;
 	}
 }

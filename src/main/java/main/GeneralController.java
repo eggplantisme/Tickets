@@ -1,37 +1,38 @@
 package main; 
 
 
-import java.util.Enumeration;
+import java.io.File;
+import java.sql.Date;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.websocket.Session;
-import javax.websocket.server.PathParam;
 
-import org.aspectj.weaver.NameMangler;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.beans.MethodInvocationException;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.commonj.TimerManagerFactoryBean;
 import org.springframework.stereotype.Controller;    
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
+import bean.Cinema;
 import bean.Comment;
 import bean.Movie;
 import bean.Order;
 import bean.Schedule;
 import bean.Seat;
 import bean.User;
+import dao.CinemaDao;
 import dao.CommentDao;
 import dao.MovieDao;
 import dao.OrderDao;
@@ -235,4 +236,207 @@ public class GeneralController {
     	session.setAttribute("seatId", order.getSeatId());
     	return "order";
     }
+
+    //管理员
+    //查
+    @RequestMapping(value = "/admin", method = RequestMethod.GET)
+    public String admin_jsp(Model model, HttpSession session) {
+    	MovieDao movieDao = new MovieDao();
+    	List<Movie> movies = movieDao.GetMovies();
+    	CinemaDao cinemaDao = new CinemaDao();
+    	List<Cinema> cinemas = cinemaDao.Getcinemas();
+    	ScheduleDao scheduleDao = new ScheduleDao();
+    	List<Schedule> schedules = scheduleDao.Getschedules();
+    	model.addAttribute("schedules", schedules);
+    	model.addAttribute("cinemas", cinemas);
+    	model.addAttribute("movies", movies);
+    	return "admin";
+    }
+    //电影
+    @RequestMapping(value = "/admin_movie", method = RequestMethod.GET)
+    public String admin_movie_jsp(Model model, HttpSession session) {
+    	return "Admin_Movie";
+    }
+    	//增
+    @RequestMapping(value = "/admin_movie", method = RequestMethod.POST)
+    public String admin_movie(@RequestParam("Post_big") MultipartFile big_post, 
+    		@RequestParam("Post") MultipartFile post, @RequestParam("Trailer") MultipartFile trail, 
+    		@RequestParam("movie_name") String movie_name, @RequestParam("main_actors") String main_actors, 
+    		@RequestParam("movie_description") String movie_description, @RequestParam("movie_intro") String movie_intro, 
+    		@RequestParam("movie_style") String movie_style, @RequestParam("movie_director") String movie_director,
+    		@RequestParam("movie_span") String movie_span, @RequestParam("On_time") Date On_time,
+    		@RequestParam("End_time") Date End_time,
+    		Model model, HttpSession session, HttpServletRequest request) {
+    	System.out.println("hah1");
+    	MovieDao movieDao = new MovieDao();
+    	Movie movie = new Movie();
+    	movie.setEnd_time(End_time);
+    	movie.setMain_actors(main_actors);
+    	movie.setMovie_description(movie_description);
+    	movie.setMovie_director(movie_director);
+    	movie.setMovie_intro(movie_intro);
+    	movie.setMovie_name(movie_name);
+    	movie.setMovie_span(movie_span);
+    	movie.setMovie_style(movie_style);
+    	movie.setNow_ReceivedMoney(0);
+    	movie.setOn_time(On_time);
+    	int mId = movieDao.AddMovie(movie);
+    	String post_path = request.getSession().getServletContext().getRealPath("/") + "images/movie/";
+    	String video_path =request.getSession().getServletContext().getRealPath("/") + "video/";
+    	try {
+    		big_post.transferTo(new File(post_path + mId + "_big.jpg"));
+    		post.transferTo(new File(post_path + mId + ".jpg"));
+    		trail.transferTo(new File(video_path + mId + ".mp4"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	return "redirect:admin";
+    }
+    	//删
+    @RequestMapping(value = "/admin/movie_delete/{mId}", method = RequestMethod.DELETE)
+    public String admin_movie_delete(@PathVariable int mId, Model model, HttpSession session, HttpServletRequest request) {
+    	MovieDao movieDao = new MovieDao();
+    	movieDao.DeleteMovie(mId);
+    	String post_path = request.getSession().getServletContext().getRealPath("/") + "images/movie/";
+    	String video_path =request.getSession().getServletContext().getRealPath("/") + "video/";
+    	File file = new File(post_path + mId + "_big.jpg");
+    	file.delete();
+    	file = new File(post_path + mId + ".jpg");
+    	file.delete();
+    	file = new File(video_path + mId + ".mp4");
+    	file.delete();
+    	return "redirect:../../admin";
+    }
+		//改
+    @RequestMapping(value = "/admin_movie/{mId}", method = RequestMethod.GET)
+    public String admin_movie_update_jsp(@PathVariable int mId, Model model, HttpSession session) {
+    	MovieDao movieDao = new MovieDao();
+    	Movie movie = movieDao.GetMovieFromID(mId);
+    	model.addAttribute("movie", movie);
+    	return "Admin_Movie";
+    }
+    @RequestMapping(value = "/admin_movie/{mId}", method = RequestMethod.POST)
+    public String admin_movie_update(@PathVariable int mId,  
+    		@RequestParam("movie_name") String movie_name, @RequestParam("main_actors") String main_actors, 
+    		@RequestParam("movie_description") String movie_description, @RequestParam("movie_intro") String movie_intro, 
+    		@RequestParam("movie_style") String movie_style, @RequestParam("movie_director") String movie_director,
+    		@RequestParam("movie_span") String movie_span, @RequestParam("On_time") Date On_time,
+    		@RequestParam("End_time") Date End_time, Model model, HttpSession session) {
+    	MovieDao movieDao = new MovieDao();
+    	Movie movie = new Movie();
+    	movie.setEnd_time(End_time);
+    	movie.setMain_actors(main_actors);
+    	movie.setMovie_description(movie_description);
+    	movie.setMovie_director(movie_director);
+    	movie.setMovie_intro(movie_intro);
+    	movie.setMovie_name(movie_name);
+    	movie.setMovie_span(movie_span);
+    	movie.setMovie_style(movie_style);
+    	movie.setNow_ReceivedMoney(0);
+    	movie.setOn_time(On_time);
+    	movieDao.UpdateMovie(movie, mId);
+    	return "redirect:../admin";
+    }
+    //影院
+    @RequestMapping(value = "/admin_cinema", method = RequestMethod.GET)
+    public String admin_cinema_jsp(Model model, HttpSession session) {
+    	return "Admin_Cinema";
+    }
+		//增
+    @RequestMapping(value = "/admin_cinema", method = RequestMethod.POST)
+    public String admin_cinema(Cinema cinema, Model model, HttpSession session) {
+    	CinemaDao cinemaDao = new CinemaDao();
+    	cinemaDao.addCinema(cinema);
+    	return "redirect:admin";
+    }
+    	//改
+    @RequestMapping(value = "/admin_cinema/{cId}", method = RequestMethod.GET)
+    public String admin_cinema_update_jsp(@PathVariable int cId, Model model, HttpSession session) {
+    	CinemaDao cinemaDao = new CinemaDao();
+    	Cinema cinema = cinemaDao.GetCinema(cId);
+    	model.addAttribute("cinema", cinema);
+    	return "Admin_Cinema";
+    }
+    @RequestMapping(value = "/admin_cinema/{cId}", method = RequestMethod.POST)
+    public String admin_cinema_update(@PathVariable int cId, Cinema cinema, Model model, HttpSession session) {
+    	CinemaDao cinemaDao = new CinemaDao();
+    	cinemaDao.UpdateCinema(cinema, cId);
+    	model.addAttribute("cinema", cinema);
+    	return "redirect:../admin";
+    }
+    	//删
+    @RequestMapping(value = "/admin/cinema_delete/{cId}", method = RequestMethod.DELETE)
+    public String admin_cinema_delete(@PathVariable int cId, Model model, HttpSession session) {
+    	CinemaDao cinemaDao = new CinemaDao();
+    	cinemaDao.DeleteCinema(cId);
+    	return "redirect:../../admin";
+    }
+    
+    //Schedule
+    @RequestMapping(value = "/admin_schedule", method = RequestMethod.GET)
+    public String admin_schedule_jsp(Model model, HttpSession session) {
+    	return "Admin_Schedule";
+    }
+    	//add
+    @RequestMapping(value = "/admin_schedule", method = RequestMethod.POST)
+    public String admin_schedule(@RequestParam("mId") String mId, @RequestParam("cId") String cId, 
+    		@RequestParam("price") String price, @RequestParam("hallName") String hallName,
+    		@RequestParam("startDate") Date startDate, @RequestParam("startTime") String startTime, 
+    		Model model, HttpSession session) {
+    	ScheduleDao scheduleDao = new ScheduleDao();
+    	Schedule schedule = new Schedule();
+    	Time _startTime = null;
+    	try {
+    		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+        	_startTime = new Time(simpleDateFormat.parse(startTime).getTime());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	schedule.setmId(Integer.parseInt(mId));
+    	schedule.setHallName(hallName);
+    	schedule.setPrice(price);
+    	schedule.setcId(Integer.parseInt(cId));
+    	schedule.setStartDate(startDate);
+    	schedule.setStartTime(_startTime);
+    	scheduleDao.addSchedule(schedule);
+    	return "redirect:admin";
+    }
+    	//删
+    @RequestMapping(value = "/admin/schedule_delete/{sId}", method = RequestMethod.DELETE)
+    public String admin_schedule_delete(@PathVariable int sId, Model model, HttpSession session) {
+    	ScheduleDao scheduleDao = new ScheduleDao();
+    	scheduleDao.DeleteSchedule(sId);
+    	return "redirect:../../admin";
+    }
+    	//改
+    @RequestMapping(value = "/admin_schedule/{sId}", method = RequestMethod.GET)
+    public String admin_schedule_update_jsp(@PathVariable int sId, Model model, HttpSession session) {
+    	ScheduleDao scheduleDao = new ScheduleDao();
+    	Schedule schedule = scheduleDao.GetSchedule(sId);
+    	model.addAttribute("schedule", schedule);
+    	return "Admin_Schedule";
+    }
+    @RequestMapping(value = "/admin_schedule/{sId}", method = RequestMethod.POST)
+    public String admin_schedule_update(@PathVariable int sId, @RequestParam("mId") String mId, @RequestParam("cId") String cId, 
+    		@RequestParam("price") String price, @RequestParam("hallName") String hallName,
+    		@RequestParam("startDate") Date startDate, @RequestParam("startTime") String startTime,  Model model, HttpSession session) {
+    	ScheduleDao scheduleDao = new ScheduleDao();
+    	Schedule schedule = new Schedule();
+    	Time _startTime = null;
+    	try {
+    		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+        	_startTime = new Time(simpleDateFormat.parse(startTime).getTime());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	schedule.setmId(Integer.parseInt(mId));
+    	schedule.setHallName(hallName);
+    	schedule.setPrice(price);
+    	schedule.setcId(Integer.parseInt(cId));
+    	schedule.setStartDate(startDate);
+    	schedule.setStartTime(_startTime);
+    	scheduleDao.UpdateSchedule(schedule, sId);
+    	return "redirect:../admin";
+    }
+    
 }

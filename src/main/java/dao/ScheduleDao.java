@@ -19,7 +19,7 @@ public class ScheduleDao extends Data_Built{
 	
 	String delete_schedule = "delete from scheduleInfo where sId = ?";
 	
-	String update_scheduleInfo = "update scheduleInfo set mId=?, cId=?, Price=? hallName=? startDate=? startTime=? where sId=?";
+	String update_scheduleInfo = "update scheduleInfo set mId=?, cId=?, Price=?, hallName=?, startDate=?, startTime=? where sId=?";
 	
 	String query_all_schedule = "select * from scheduleInfo";
 	String query_schedule = "select * from scheduleInfo where sId = ?";
@@ -96,6 +96,7 @@ public class ScheduleDao extends Data_Built{
 			ps.setString(4,  schedule.getHallName());
 			ps.setDate(5, schedule.getStartDate());
 			ps.setTime(6,  schedule.getStartTime());
+			ps.setInt(7, sId);
 			int num = ps.executeUpdate();
 			if (num > 0) {
 				bool = true;

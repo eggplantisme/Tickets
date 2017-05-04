@@ -3,13 +3,17 @@ package bean;
 import java.sql.Date;
 import java.sql.Time;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class Schedule {
 	private int sId;
 	private int mId;
 	private int cId;
 	private String price;
 	private String hallName;
+	
 	private Date startDate;
+	
 	private Time startTime;
 	public int getsId() {
 		return sId;
