@@ -3,7 +3,6 @@ package bean;
 import java.sql.Date;
 import java.sql.Time;
 
-import org.springframework.format.annotation.DateTimeFormat;
 
 public class Schedule {
 	private int sId;

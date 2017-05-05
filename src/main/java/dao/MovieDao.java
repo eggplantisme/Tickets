@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import bean.Cinema;
 import bean.Movie;
 
 public class MovieDao  extends Data_Built {

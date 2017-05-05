@@ -6,6 +6,8 @@ import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -19,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -56,12 +59,27 @@ public class GeneralController {
     }
     @RequestMapping(value = "/login", method = RequestMethod.POST)    
     public String login(User user,  HttpSession session) {
-    	//session.setAttribute("phoneNumber", user.getPhoneNumber());
-    	//ajax异步访问来确定数据库是否有重复用户，TODO
-    	
-    	session.setAttribute("username", user.getUsername());
-    	session.setAttribute("userId", 1);//暂时设定为1，登录时需要从数据库验证是否存在，这时候来获取真正的ID，页面表单验证实现阶段在来实现这个东西 TODO
+    	UserDao userDao = new UserDao();
+    	User real_user = userDao.GetUserbyName(user.getUsername());
+    	if (real_user != null) {
+    		session.setAttribute("username", real_user.getUsername());
+        	session.setAttribute("userId", real_user.getUserId());
+    	}
     	return "redirect:index";
+    }
+    @RequestMapping(value = "/login", method = RequestMethod.PUT)  
+    @ResponseBody
+    public String login_validation(@RequestBody Map<Object, Object> user,  HttpSession session) {
+    	UserDao userDao = new UserDao();
+    	User real_user = userDao.GetUserbyName(user.get("username").toString());
+    	String result = "Yes";
+    	if (real_user.getUsername() == null) {
+    		result = "username";
+    	} else if (!real_user.getPassword().equals(user.get("password").toString())) {
+    		result = "password";
+    	}
+		System.out.println(real_user.getPassword() + " " + user.get("password").toString());
+    	return result;
     }
     
     //注册
@@ -71,13 +89,24 @@ public class GeneralController {
     }
     @RequestMapping(value="/regist", method = RequestMethod.POST)
     public String regist(User user, Model model, HttpSession session) {
-    	//没有做重复名字的处理
     	System.out.println(user.getUsername() + "-" + user.getPassword() + "-" + user.getPhoneNumber());
     	UserDao userDao = new UserDao();
         int uId = userDao.addUser(user);
         session.setAttribute("username", user.getUsername());
         session.setAttribute("userId", uId);
     	return "redirect:index";
+    }
+    @RequestMapping(value="/regist", method = RequestMethod.PUT)
+    @ResponseBody
+    public String regist_username(@RequestBody Map<Object, Object> username, Model model, HttpSession session) {
+    	UserDao userDao = new UserDao();
+    	boolean has = userDao.queryUserbyName(username.get("username").toString());
+    	if (has) {
+    		return "YES";
+    	} else {
+    		return "NO";
+    	}
+    	
     }
     
     //用户详情

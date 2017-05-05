@@ -53,12 +53,12 @@ public class UserDao extends Data_Built{
 		return uId;
 	}
 	//≤È—Ø”√ªß
-	public boolean queryUserbyName(User bean){
+	public boolean queryUserbyName(String name){
 		openCon();
 		boolean bool=false;
 		try {
 			ps=con.prepareStatement(query_user_byName);
-			ps.setString(1, bean.getUsername());
+			ps.setString(1, name);
 			rs = ps.executeQuery();
 			while(rs.next()){
 				bool=true;
@@ -73,6 +73,30 @@ public class UserDao extends Data_Built{
 		}
 		return bool;
 	}
+		public User GetUserbyName(String name){
+			openCon();
+			User user = new User();
+			try {
+				ps=con.prepareStatement(query_user_byName);
+				ps.setString(1, name);
+				rs = ps.executeQuery();
+				while(rs.next()){
+					user.setUserId(rs.getInt("uId"));
+					user.setUsername(rs.getString("userName"));
+					user.setPassword(rs.getString("passWord"));
+					user.setPhoneNumber(rs.getString("PhoneNumber"));
+					user.setUserLocation(rs.getString("UserLocation"));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally{
+				this.closeRs();
+				this.closePs();
+				this.closeCon();
+			}
+			return user;
+		}
 	public boolean queryUserbyPhone(User bean){
 		openCon();
 		boolean bool=false;
