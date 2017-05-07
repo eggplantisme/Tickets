@@ -11,15 +11,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.beans.MethodInvocationException;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.commonj.TimerManagerFactoryBean;
 import org.springframework.stereotype.Controller;    
 import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,12 +51,20 @@ public class GeneralController {
     	return "login";
     }
     @RequestMapping(value = "/login", method = RequestMethod.POST)    
-    public String login(User user,  HttpSession session) {
+    public String login(User user,  HttpSession session, Model model) {
     	UserDao userDao = new UserDao();
-    	User real_user = userDao.GetUserbyName(user.getUsername());
-    	if (real_user != null) {
+    	if (user.getUsername().equals("eggplant")) {
+    		User admin_user = userDao.GetUserbyName("eggplant");
+    		if (admin_user.getPassword().equals(user.getPassword())) {
+    			session.setAttribute("username", "eggplant");
+    			return "redirect:admin";
+    		}
+    	}
+		User real_user = userDao.GetUserbyName(user.getUsername());
+    	if (real_user != null && user.getPassword().equals(real_user.getPassword())) {
     		session.setAttribute("username", real_user.getUsername());
         	session.setAttribute("userId", real_user.getUserId());
+        	model.addAttribute("name", session.getAttribute("username"));
     	}
     	return "redirect:index";
     }
@@ -159,7 +160,7 @@ public class GeneralController {
     		return jsonObject;
     	} else if (comment != "") {//要添加时
     		jsonObject.put("isDelete", "NO");
-    		jsonObject.put("commentId", "");
+    		
     		Comment _comment = new Comment();
         	if (session.getAttribute("username") == null) {
         		_comment.setUserName("路人");
@@ -172,7 +173,8 @@ public class GeneralController {
         	jsonObject.put("mid", id);
         	_comment.setCommentText(comment);
         	jsonObject.put("comment", comment);
-        	commentDao.AddComment(_comment);
+        	int cId = commentDao.AddComment(_comment);
+        	jsonObject.put("commentId", cId);
     		return jsonObject;
     	} else {
     		return null;

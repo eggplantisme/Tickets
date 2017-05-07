@@ -54,9 +54,9 @@ $(function(){
 	    				user = 0;
 	    				$$('input').name('submit').hide();
 	            	} else if (msg == "password") {
-	            		$$('.user_put').css('display','block');
+	            		$$('.user_ok').css('display','block');
+	        			$$('.user_put').css('display','none');
 	        			$$('.user_error').css('display','none');
-	        			$$('.user_ok').css('display','none');
 	        			user = 1;
 	            		$$('.pass_put').css('display','none');
 	        			$$('.pass_error').css('display','block');
@@ -64,9 +64,9 @@ $(function(){
 	        			pass = 0;
 	        			$$('input').name('submit').hide();
 	            	} else {
-	            		$$('.user_put').css('display','block');
+	            		$$('.user_ok').css('display','block');
+	        			$$('.user_put').css('display','none');
 	        			$$('.user_error').css('display','none');
-	        			$$('.user_ok').css('display','none');
 	        			user = 1;
 	            		$$('.pass_put').css('display','none');
 	        			$$('.pass_error').css('display','none');
@@ -117,9 +117,9 @@ $(function(){
 	    				user = 0;
 	    				$$('input').name('submit').hide();
 	            	} else if (msg == "password") {
-	            		$$('.user_put').css('display','block');
+	            		$$('.user_ok').css('display','block');
+	        			$$('.user_put').css('display','none');
 	        			$$('.user_error').css('display','none');
-	        			$$('.user_ok').css('display','none');
 	        			user = 1;
 	            		$$('.pass_put').css('display','none');
 	        			$$('.pass_error').css('display','block');
@@ -127,9 +127,9 @@ $(function(){
 	        			pass = 0;
 	        			$$('input').name('submit').hide();
 	            	} else {
-	            		$$('.user_put').css('display','block');
+	            		$$('.user_ok').css('display','block');
+	        			$$('.user_put').css('display','none');
 	        			$$('.user_error').css('display','none');
-	        			$$('.user_ok').css('display','none');
 	        			user = 1;
 	            		$$('.pass_put').css('display','none');
 	        			$$('.pass_error').css('display','none');

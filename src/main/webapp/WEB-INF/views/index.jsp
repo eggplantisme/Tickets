@@ -4,6 +4,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="icon" href="images/icon.jpg">
         <link rel="stylesheet" href="css/bootstrap.min.css">  
 		<script src="js/jquery-3.2.1.min.js"></script>
 		<script src="js/bootstrap.min.js"></script>
@@ -56,7 +57,7 @@
 	        <div class="well well-sm">
 	        	<div class="row">
 		        	<div class="col-sm-6 col-md-3">
-		        		<img alt="Welcome" src="images/head.jpg" class="image-rounded img-responsive"/>
+		        		<img alt="Welcome" src="images/eggplant.jpg" class="image-rounded img-responsive" width="100px"/>
 		        	</div>
 		        	
 		        	<div class="col-sm-6 col-md-3 btn-group">

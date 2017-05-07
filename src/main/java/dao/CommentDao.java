@@ -26,8 +26,8 @@ public class CommentDao extends Data_Built {
 		}
 	}
 	
-	public boolean AddComment(Comment comment) {
-		boolean bool=false;
+	public int AddComment(Comment comment) {
+		int cId = 0;
 		openCon();
 		try {
 			ps= con.prepareStatement(add_comment);
@@ -36,7 +36,10 @@ public class CommentDao extends Data_Built {
 			ps.setString(3, comment.getCommentText());
 			int num = ps.executeUpdate();
 			if(num>0){
-				bool=true;
+				ps = con.prepareStatement("select @@IDENTITY");
+				rs = ps.executeQuery();
+				while (rs.next())
+					cId = rs.getInt("@@IDENTITY");
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -45,7 +48,7 @@ public class CommentDao extends Data_Built {
 			this.closePs();
 			this.closeCon();
 		}
-		return bool;
+		return cId;
 	}
 	public List<Comment> getAllComments(int mId) {
 		openCon();

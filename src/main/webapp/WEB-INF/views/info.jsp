@@ -8,6 +8,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>个人中心</title>
+	<link rel="icon" href="images/icon.jpg">
 	<link rel="stylesheet" href="css/bootstrap.min.css">  
 	<script src="js/jquery-3.2.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
