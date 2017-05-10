@@ -90,15 +90,15 @@
 					
 					<div class="pull-right">
 						未选择的座位
-						<button type="button" class="btn btn-default btn-sm" name="${i}_${j}">
+						<button type="button" class="btn btn-default btn-sm">
 				          	<span class="glyphicon glyphicon-inbox"></span>
 				        </button>
 						已选择的座位
-						<button type="button" class="btn btn-danger btn-sm" name="${i}_${j}">
+						<button type="button" class="btn btn-danger btn-sm">
 				          	<span class="glyphicon glyphicon-inbox"></span>
 				        </button>
 				      	 您选择的座位
-						<button type="button" class="btn btn-success btn-sm" name="${i}_${j}">
+						<button type="button" class="btn btn-success btn-sm">
 				          	<span class="glyphicon glyphicon-inbox"></span>
 				        </button>
 					</div>
@@ -120,12 +120,12 @@
 										</c:forEach><!-- 判断是否已经被占用了 -->
 					    				<c:choose>
 					    					<c:when test="${used ==  1}">
-					    						<button type="button" class="btn btn-danger btn-sm" disabled name="${i}_${j}">
+					    						<button type="button" class="btn btn-danger btn-sm" disabled name="${i}_${j}" data-toggle="popover" data-content="${i}排${j}列" data-trigger="hover" data-placement="top">
 										          	<span class="glyphicon glyphicon-inbox"></span>
 										        </button>
 					    					</c:when>
 					    					<c:otherwise>
-					    						<button type="button" class="btn btn-default btn-sm seats" name="${i}_${j}">
+					    						<button type="button" class="btn btn-default btn-sm seats" name="${i}_${j}" data-toggle="popover" data-content="${i}排${j}列" data-trigger="hover" data-placement="top">
 										          	<span class="glyphicon glyphicon-inbox"></span>
 										        </button>
 					    					</c:otherwise>

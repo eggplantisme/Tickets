@@ -4,6 +4,7 @@
 var row = 0;
 var column = 0;
 $(document).ready(function() {
+	$("[data-toggle='popover']").popover();
 	var seat_num = 0;
 	$(".seats").click(function() {
 			if ($(this).hasClass("btn-default")) {

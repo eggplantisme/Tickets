@@ -50,7 +50,7 @@ public class GeneralController {
     public String login_jsp(Model model){
     	return "login";
     }
-    @RequestMapping(value = "/login", method = RequestMethod.POST)    
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(User user,  HttpSession session, Model model) {
     	UserDao userDao = new UserDao();
     	if (user.getUsername().equals("eggplant")) {
@@ -68,7 +68,7 @@ public class GeneralController {
     	}
     	return "redirect:index";
     }
-    @RequestMapping(value = "/login", method = RequestMethod.PUT)  
+    @RequestMapping(value = "/login", method = RequestMethod.PUT)
     @ResponseBody
     public String login_validation(@RequestBody Map<Object, Object> user,  HttpSession session) {
     	UserDao userDao = new UserDao();
