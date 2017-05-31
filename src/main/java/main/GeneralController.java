@@ -2,11 +2,15 @@ package main;
 
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -40,8 +44,135 @@ import net.sf.json.JSONObject;
 @Controller
 public class GeneralController {
 
+	public String getRemoteHost(javax.servlet.http.HttpServletRequest request){
+	    String ip = request.getHeader("x-forwarded-for");
+	    if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+	        ip = request.getHeader("Proxy-Client-IP");
+	    }
+	    if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+	        ip = request.getHeader("WL-Proxy-Client-IP");
+	    }
+	    if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+	        ip = request.getRemoteAddr();
+	    }
+	    //return ip.equals("0:0:0:0:0:0:0:1")?"127.0.0.1":ip;
+	    return "202.96.128.86";//测试
+	}
+	
+    /** 
+     * unicode 转换成 中文 
+     *  
+     * @author fanhui 2007-3-15 
+     * @param theString 
+     * @return 
+     */  
+    public static String decodeUnicode(String theString) {  
+        char aChar;  
+        int len = theString.length();  
+        StringBuffer outBuffer = new StringBuffer(len);  
+        for (int x = 0; x < len;) {  
+            aChar = theString.charAt(x++);  
+            if (aChar == '\\') {  
+                aChar = theString.charAt(x++);  
+                if (aChar == 'u') {  
+                    int value = 0;  
+                    for (int i = 0; i < 4; i++) {  
+                        aChar = theString.charAt(x++);  
+                        switch (aChar) {  
+                        case '0':  
+                        case '1':  
+                        case '2':  
+                        case '3':  
+                        case '4':  
+                        case '5':  
+                        case '6':  
+                        case '7':  
+                        case '8':  
+                        case '9':  
+                            value = (value << 4) + aChar - '0';  
+                            break;  
+                        case 'a':  
+                        case 'b':  
+                        case 'c':  
+                        case 'd':  
+                        case 'e':  
+                        case 'f':  
+                            value = (value << 4) + 10 + aChar - 'a';  
+                            break;  
+                        case 'A':  
+                        case 'B':  
+                        case 'C':  
+                        case 'D':  
+                        case 'E':  
+                        case 'F':  
+                            value = (value << 4) + 10 + aChar - 'A';  
+                            break;  
+                        default:  
+                            throw new IllegalArgumentException(  
+                                    "Malformed      encoding.");  
+                        }  
+                    }  
+                    outBuffer.append((char) value);  
+                } else {  
+                    if (aChar == 't') {  
+                        aChar = '\t';  
+                    } else if (aChar == 'r') {  
+                        aChar = '\r';  
+                    } else if (aChar == 'n') {  
+                        aChar = '\n';  
+                    } else if (aChar == 'f') {  
+                        aChar = '\f';  
+                    }  
+                    outBuffer.append(aChar);  
+                }  
+            } else {  
+                outBuffer.append(aChar);  
+            }  
+        }  
+        return outBuffer.toString();  
+    } 
+	
+    
+    public List<Movie> index_movie() {
+    	MovieDao movieDao = new MovieDao();
+    	List<Movie> movies = movieDao.GetMovies();//暂时设定为获取全部影片
+    	return movies;
+    }
+    
+    public List<Cinema> index_cinema() {
+    	CinemaDao cinemaDao = new CinemaDao();
+    	List<Cinema> cinemas = cinemaDao.Getcinemas();//暂时设定为获取全部影院
+    	return cinemas;
+    }
     @RequestMapping(value={"/index", "/"})
-    public String index_jsp(Model model,  HttpSession session){
+    public String index_jsp(Model model,  HttpSession session,  HttpServletRequest request){
+    	//获取地理位置
+    	String ip = getRemoteHost(request);
+    	try {
+    		URL url = new URL("http://ip.taobao.com/service/getIpInfo.php?ip=" + ip);
+    		HttpURLConnection urlConn = (HttpURLConnection)url.openConnection();
+    		InputStream res = urlConn.getInputStream();
+    	    Scanner scanner = new Scanner(res);
+    	    String urlContent = "";
+    	    while (scanner.hasNextLine()) {
+    	        urlContent += (String)scanner.nextLine();
+    	    }
+    	    System.out.println(urlContent);
+    	    String[] temp = urlContent.split(",");
+    	    String region = (temp[7].split(":"))[1].replaceAll("\"", "");  
+            region = decodeUnicode(region);// 省份
+            System.out.println(region);
+            model.addAttribute("region", region);
+            session.setAttribute("region", region);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
+    	List<Movie> movies_to_show = index_movie();
+    	model.addAttribute("movies", movies_to_show);
+    	
+    	List<Cinema> cinemas_to_show = index_cinema();
+    	model.addAttribute("cinemas", cinemas_to_show);
         model.addAttribute("name", session.getAttribute("username"));
         return "index";
     }
@@ -189,6 +320,29 @@ public class GeneralController {
     	model.addAttribute("movies", movies);
     	model.addAttribute("name", session.getAttribute("username"));
     	return "movies";
+    }
+    
+    //影院信息
+    @RequestMapping(value="/cinema/{id}", method = RequestMethod.GET)
+    public String cinema_jsp(@PathVariable int id, Model model, HttpSession session) {
+    	ScheduleDao scheduleDao = new ScheduleDao();
+    	List<Schedule> schedules = scheduleDao.GetschedulesByCid(id);
+    	CinemaDao cinemaDao = new CinemaDao();
+    	Cinema cinema = cinemaDao.GetCinema(id);
+    	model.addAttribute("cinema", cinema);
+    	model.addAttribute("schedules", schedules);
+    	model.addAttribute("name", session.getAttribute("username"));
+    	return "cinema";
+    }
+    
+    //所有影院
+    @RequestMapping(value="/cinemas", method = RequestMethod.GET)
+    public String cinemas_jsp(Model model, HttpSession session) {
+    	CinemaDao cinemaDao = new CinemaDao();
+    	List<Cinema> cinemas = cinemaDao.Getcinemas();
+    	model.addAttribute("cinemas", cinemas);
+    	model.addAttribute("name", session.getAttribute("username"));
+    	return "cinemas";
     }
     //订票
     @RequestMapping(value = "/book/{id}", method = RequestMethod.GET)

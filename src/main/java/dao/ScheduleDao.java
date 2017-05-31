@@ -23,6 +23,7 @@ public class ScheduleDao extends Data_Built{
 	
 	String query_all_schedule = "select * from scheduleInfo";
 	String query_schedule = "select * from scheduleInfo where sId = ?";
+
 	
 	public ScheduleDao() {
 		openCon();
@@ -172,33 +173,61 @@ public class ScheduleDao extends Data_Built{
 	
 	String query_schedule_by_mId = "select * from scheduleInfo where mId = ?";
 	//获取所有安排
-		public List<Schedule> GetschedulesByMid(int mId) {
-			openCon();
-			ArrayList<Schedule> schedules = new ArrayList<Schedule>();
-			try {
-				ps=con.prepareStatement(query_schedule_by_mId);
-				ps.setInt(1, mId);
-				rs = ps.executeQuery();
-				while (rs.next()) {
-					Schedule schedule = new Schedule();
-					schedule.setsId(rs.getInt("sId"));
-					schedule.setmId(rs.getInt("mId"));
-					schedule.setcId(rs.getInt("cId"));
-					schedule.setPrice(rs.getString("Price"));
-					schedule.setHallName(rs.getString("hallName"));
-					schedule.setStartDate(rs.getDate("startDate"));
-					schedule.setStartTime(rs.getTime("startTime"));
-					schedules.add(schedule);
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}finally{
-				this.closeRs();
-				this.closePs();
-				this.closeCon();
+	public List<Schedule> GetschedulesByMid(int mId) {
+		openCon();
+		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
+		try {
+			ps=con.prepareStatement(query_schedule_by_mId);
+			ps.setInt(1, mId);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Schedule schedule = new Schedule();
+				schedule.setsId(rs.getInt("sId"));
+				schedule.setmId(rs.getInt("mId"));
+				schedule.setcId(rs.getInt("cId"));
+				schedule.setPrice(rs.getString("Price"));
+				schedule.setHallName(rs.getString("hallName"));
+				schedule.setStartDate(rs.getDate("startDate"));
+				schedule.setStartTime(rs.getTime("startTime"));
+				schedules.add(schedule);
 			}
-			return schedules;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			this.closeRs();
+			this.closePs();
+			this.closeCon();
 		}
-	
+		return schedules;
+	}
+	String query_schedule_cid = "select * from scheduleInfo where cId = ?";
+	public List<Schedule> GetschedulesByCid(int cId) {
+		openCon();
+		ArrayList<Schedule> schedules = new ArrayList<Schedule>();
+		try {
+			ps=con.prepareStatement(query_schedule_cid);
+			ps.setInt(1, cId);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Schedule schedule = new Schedule();
+				schedule.setsId(rs.getInt("sId"));
+				schedule.setmId(rs.getInt("mId"));
+				schedule.setcId(rs.getInt("cId"));
+				schedule.setPrice(rs.getString("Price"));
+				schedule.setHallName(rs.getString("hallName"));
+				schedule.setStartDate(rs.getDate("startDate"));
+				schedule.setStartTime(rs.getTime("startTime"));
+				schedules.add(schedule);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			this.closeRs();
+			this.closePs();
+			this.closeCon();
+		}
+		return schedules;
+	}
 }
