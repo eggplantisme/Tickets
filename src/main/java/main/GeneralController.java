@@ -8,13 +8,17 @@ import java.net.URL;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.websocket.Session;
 
+import org.apache.taglibs.standard.lang.jstl.test.beans.PublicInterface2;
 import org.springframework.stereotype.Controller;    
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -136,13 +140,42 @@ public class GeneralController {
     public List<Movie> index_movie() {
     	MovieDao movieDao = new MovieDao();
     	List<Movie> movies = movieDao.GetMovies();//暂时设定为获取全部影片
-    	return movies;
+    	Compare_money compare_money  = new Compare_money(); 
+    	Collections.sort(movies, compare_money);
+    	
+    	if (movies.size() < 5) return movies;
+    	else return movies.subList(0, 5);
+    }
+    public class Compare_money implements Comparator {
+    	public int compare(Object obj0, Object obj1) {
+        	Movie movie1 = (Movie)obj0;
+        	Movie movie2 = (Movie)obj1;
+        	int flag = movie2.getNow_ReceivedMoney() > movie1.getNow_ReceivedMoney() ? 1 : -1;
+        	return flag;
+        }
     }
     
     public List<Cinema> index_cinema() {
     	CinemaDao cinemaDao = new CinemaDao();
     	List<Cinema> cinemas = cinemaDao.Getcinemas();//暂时设定为获取全部影院
     	return cinemas;
+    }
+    
+    public class Compare_time implements Comparator {
+    	public int compare(Object obj0, Object obj1) {
+        	Movie movie1 = (Movie)obj0;
+        	Movie movie2 = (Movie)obj1;
+        	int flag = movie2.getOn_time().before(movie1.getOn_time()) ? 1 : -1;
+        	return flag;
+        }
+    }
+    public List<Movie> lastest_movie() {
+    	MovieDao movieDao = new MovieDao();
+    	List<Movie> movies = movieDao.GetMovies();//暂时设定为获取全部影片
+    	Compare_time compare_time = new Compare_time();
+    	Collections.sort(movies, compare_time);
+    	if (movies.size() < 5) return movies;
+    	else return movies.subList(0, 5);
     }
     @RequestMapping(value={"/index", "/"})
     public String index_jsp(Model model,  HttpSession session,  HttpServletRequest request){
@@ -173,6 +206,9 @@ public class GeneralController {
     	
     	List<Cinema> cinemas_to_show = index_cinema();
     	model.addAttribute("cinemas", cinemas_to_show);
+    	
+    	List<Movie> movies_lates = lastest_movie();
+    	model.addAttribute("movies_late", movies_lates);
         model.addAttribute("name", session.getAttribute("username"));
         return "index";
     }
@@ -622,6 +658,12 @@ public class GeneralController {
     	schedule.setStartTime(_startTime);
     	scheduleDao.UpdateSchedule(schedule, sId);
     	return "redirect:../admin";
+    }
+    //help文档
+    @RequestMapping(value="/help", method = RequestMethod.GET)
+    public String help(Model model, HttpSession session){
+    	model.addAttribute("name", session.getAttribute("username"));
+    	return "help";
     }
     
 }

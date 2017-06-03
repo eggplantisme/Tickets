@@ -80,8 +80,8 @@
 	        </div>
         	<!-- 页面第三行 -->
         	<div class="btn-group">
-        		<button type="button" class="btn btn-default">正在热映(数量)</button><!-- 数量要后台给数据 -->
-        		<button type="button" class="btn btn-default">即将热映(数量)</button><!-- 数量要后台给数据 -->
+        		<button type="button" class="btn btn-default">正在热映(${movies_late.size()})</button><!-- 数量要后台给数据 -->
+        		<button type="button" class="btn btn-default">即将热映(1)</button><!-- 数量要后台给数据 -->
         		<a href="./movies"><button type="button" class="btn btn-default">查看全部<span class="glyphicon glyphicon-chevron-right"></span></button></a>
         	</div>
         	<!-- 轮播-->
@@ -94,6 +94,7 @@
         			<li data-target="#carousel_for_main" data-slide-to="4"></li>
         		</ol>
         		<div class="carousel-inner">
+        			<!-- 
         			<div class="item active col-center-block">
         				<img src="images/miku.jpg" alt="First slide" class="img-responsive center-block">
         			</div>
@@ -109,6 +110,21 @@
         			<div class="item col-center-block">
         				<img src="images/夏娜.jpg" alt="Five slide" class="img-responsive center-block">
         			</div>
+        			 -->
+        			<c:forEach var="movie" items="${movies}" varStatus="status">
+        				<c:choose>
+        					<c:when test="${status.index == 0}">
+        						<div class="item active col-center-block">
+			        				<a href="./movie/${movie.id}"><img src="images/movie/${movie.id}_big.jpg" alt = "${movie.id}" class="img-responsive center-block"></a>
+			        			</div>
+        					</c:when>
+        					<c:otherwise>
+        						<div class="item col-center-block">
+			        				<a href="./movie/${movie.id}"><img src="images/movie/${movie.id}_big.jpg" alt = "${movie.id}" class="img-responsive center-block"></a>
+			        			</div>
+        					</c:otherwise>
+        				</c:choose>
+        			</c:forEach>
         		</div>
         		<a class="carousel-control left" href="#carousel_for_main" data-slide="prev">&lsaquo;</a>
         		<a class="carousel-control right" href="#carousel_for_main" data-slide="next">&rsaquo;</a>
@@ -145,21 +161,11 @@
 		        			<thead>
 		        				<tr><th>新片观影指南</th></tr>
 		        			</thead>
-		        			<tbody>
-		        				<tr><td>Giacomo</td></tr>
-		        			</tbody>
-		        			<tbody>
-		        				<tr><td>ice</td></tr>
-		        			</tbody>
-		        			<tbody>
-		        				<tr><td>fire</td></tr>
-		        			</tbody>
-		        			<tbody>
-		        				<tr><td>magic</td></tr>
-		        			</tbody>
-		        			<tbody>
-		        				<tr><td>happy</td></tr>
-		        			</tbody>
+		        			<c:forEach var="movie" items="${movies_late}">
+		        				<tbody>
+			        				<tr><td><a href="./movie/${movie.id}"><c:out value="${movie.movie_name}"></c:out></a></td></tr>
+			        			</tbody>
+		        			</c:forEach>
 		        		</table>
 	        		</div>
         		</div>
@@ -172,10 +178,10 @@
         		<div class="row" align="center">
         			<div class="col-md-5"></div>
 	        		<ul class="nav navbar-nav col-md-5">
-		        			<li><a href="#"> 选座购票流程</a></li>
-		        			<li><a href="#"> 取票流程</a></li>
-		        			<li><a href="#"> 常见问题</a></li>
-		        			<li><a href="#"> 联系我们</a></li>
+		        			<li><a href="./help#order"> 选座购票流程</a></li>
+		        			<li><a href="./help#get-tickets"> 取票流程</a></li>
+		        			<li><a href="./help#question"> 常见问题</a></li>
+		        			<li><a href="./help#contact"> 联系我们</a></li>
 	        		</ul>
 	        		<div class="col-md-5"></div>
 	        	</div>
