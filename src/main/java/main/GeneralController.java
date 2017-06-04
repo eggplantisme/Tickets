@@ -665,5 +665,10 @@ public class GeneralController {
     	model.addAttribute("name", session.getAttribute("username"));
     	return "help";
     }
-    
+    //Ö§¸¶
+    @RequestMapping(value="/pay")
+    public String pay_jsp(Model model,  HttpSession session) {
+        model.addAttribute("name", session.getAttribute("username"));
+        return "pay";
+    }
 }
