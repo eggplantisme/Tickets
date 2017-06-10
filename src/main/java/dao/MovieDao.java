@@ -14,7 +14,8 @@ public class MovieDao  extends Data_Built {
 	String create_movie_table = "create table if not exists movieInfo(mId int AUTO_INCREMENT primary key, movieName TEXT, movieActors TEXT, "
 			+ "movieDescription TEXT, Now_ReceivedMoney int, On_time DATE, End_time DATE, Poster TEXT, Trailer TEXT, movieIntro TEXT, movieDirector TEXT, movieStyle TEXT, movieSpan TEXT)";
 	String add_movie = "insert into movieInfo(movieName, movieActors, "
-			+ "movieDescription, Now_ReceivedMoney, On_time, End_time, Poster, Trailer, movieIntro, movieDirector, movieStyle, movieSpan) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			+ "movieDescription, Now_ReceivedMoney, On_time, End_time, Poster, "
+			+ "Trailer, movieIntro, movieDirector, movieStyle, movieSpan) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 	
 	String query_movie_byId = "select * from movieInfo where mId=?";
 	String query_all_movie = "select * from movieInfo";

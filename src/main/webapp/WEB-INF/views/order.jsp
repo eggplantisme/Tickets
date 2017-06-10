@@ -107,6 +107,7 @@
 				<tr><td><c:out value="价格:${order.orderPrice}"></c:out></td><td></td><td></td><td></td></tr>
 				<tr><td><c:out value="订单号:${order.oId}"></c:out></td><td></td><td></td><td></td></tr>
 				<tr><td><c:out value="订单状态:${order.status}"></c:out></td><td></td><td></td><td></td></tr>
+				<tr><td><a href="../pay" class="btn btn-info btn-lg"><span class="glyphicon glyphicon-euro"></span></a></td></tr>
 			</table>
 		</div>
 	</div>
